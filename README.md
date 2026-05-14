@@ -97,7 +97,7 @@ feiteng_ai_doctor/
   
   numpy（传感器数据处理）
   
-  smbus2（I2C 总线通信，Linux 环境）
+  smbus（I2C 总线通信，Linux 环境）
 
 #### 硬件要求
 
@@ -112,7 +112,7 @@ feiteng_ai_doctor/
 ### 安装依赖
 
 ```bash
-pip install PyQt6 requests reportlab python-dotenv numpy smbus2
+pip install PyQt6 requests reportlab python-dotenv numpy smbus
 ```
 
 ### 配置 API Key
@@ -156,7 +156,7 @@ pip install PyQt6 requests reportlab python-dotenv numpy smbus2
 3. **修改 `.env` 配置**
    ```ini
    USE_REAL_SENSOR=True
-   I2C_BUS=1
+   I2C_BUS=2
    MAX30102_I2C_ADDRESS=0x57
    ```
 
@@ -394,4 +394,4 @@ use_sensor = Config.USE_REAL_SENSOR
 - [pytest](https://docs.pytest.org/) - 测试框架
 - [python-dotenv](https://pypi.org/project/python-dotenv/) - 配置管理
 - [NumPy](https://numpy.org/) - 科学计算库
-- [smbus2](https://pypi.org/project/smbus2/) - I2C 通信库
+- [smbus](https://pypi.org/project/smbus/) - I2C 通信库
