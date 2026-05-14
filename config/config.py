@@ -48,11 +48,8 @@ class Config:
     # ==================== 数据配置 ====================
     MAX_CONVERSATIONS = int(os.getenv("MAX_CONVERSATIONS", "50"))
     
-    # 数据目录（打包后使用 exe 同级目录，开发环境使用 app/data）
-    if getattr(sys, 'frozen', False):
-        DATA_DIR = str(get_base_path() / "data")
-    else:
-        DATA_DIR = os.getenv("DATA_DIR", str(Path(__file__).parent.parent / "app" / "data"))
+    # 数据目录（统一使用 exe/项目根目录同级的 data 文件夹）
+    DATA_DIR = str(get_base_path() / "data")
     
     CONVERSATIONS_FILE = os.path.join(DATA_DIR, "conversations.json")
     

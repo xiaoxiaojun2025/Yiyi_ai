@@ -104,12 +104,56 @@ class MainWindow(QMainWindow):
             self.sidebar.refresh_list()
 
     def _new_conversation(self):
+        # 如果正在流式生成，先保存已生成的内容
+        if self._worker and self._worker.isRunning():
+            # 停止 worker
+            self._worker.terminate()
+            self._worker.wait()
+            
+            # 保存已生成的流式内容到当前会话
+            if self._streaming_conv_id and self._streaming_content:
+                self.data_manager.add_message(
+                    self._streaming_conv_id, 
+                    "ai", 
+                    self._streaming_content
+                )
+                self.sidebar.refresh_list()
+            
+            self._worker = None
+        
+        # 清理流式状态
+        self._streaming_bubble = None
+        self._streaming_conv_id = None
+        self._streaming_content = ""
+        
         conv = self.data_manager.new_conversation()
         self.sidebar.refresh_list()
         self.sidebar.set_active_conversation(conv.id)
         self.chat.set_conversation(conv)
 
     def _switch_conversation(self, conv_id: str):
+        # 如果正在流式生成，先保存已生成的内容
+        if self._worker and self._worker.isRunning():
+            # 停止 worker
+            self._worker.terminate()
+            self._worker.wait()
+            
+            # 保存已生成的流式内容到当前会话
+            if self._streaming_conv_id and self._streaming_content:
+                self.data_manager.add_message(
+                    self._streaming_conv_id, 
+                    "ai", 
+                    self._streaming_content
+                )
+                self.sidebar.refresh_list()
+            
+            self._worker = None
+        
+        # 清理流式状态
+        self._streaming_bubble = None
+        self._streaming_conv_id = None
+        self._streaming_content = ""
+        
         conv = self.data_manager.get_conversation(conv_id)
         if conv:
             self.sidebar.set_active_conversation(conv_id)

@@ -12,7 +12,7 @@ class Conversation:
                  messages: list = None, created_at: str = None, updated_at: str = None,
                  heart_rate: float = None, blood_oxygen: float = None,
                  last_measured_at: str = None):
-        self.id = conv_id or datetime.now().strftime("%Y%m%d%H%M%S")[:8]
+        self.id = conv_id or datetime.now().strftime("%Y%m%d%H%M%S")
         self.title = title
         self.messages = messages or []
         self.created_at = created_at or datetime.now().strftime("%Y-%m-%d %H:%M")

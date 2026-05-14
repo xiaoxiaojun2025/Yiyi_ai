@@ -118,7 +118,13 @@ class ChatWorker(QThread):
                     # 这样本地模型的输出可以正常显示
 
             # 回退到本地 Ollama
-            self._call_ollama()
+            try:
+                self._call_ollama()
+            except Exception as e:
+                # 本地模型也失败了
+                print(f"[DEBUG] 本地Ollama调用失败: {e}")
+                self.error_occurred.emit(f"云端和本地模型均不可用，请检查网络或启动Ollama服务")
+                
         except requests.exceptions.ConnectionError:
             self.error_occurred.emit("无法连接到服务，请检查网络或 Ollama 是否启动")
         except requests.exceptions.Timeout:
@@ -187,11 +193,6 @@ class ChatWorker(QThread):
 
     def _call_ollama(self):
         """调用本地 Ollama API"""
-        # 如果是从云端降级过来的，先发送一个提示
-        if self.siliconflow_key:
-            # 通过发送一个特殊的chunk来显示降级提示
-            self.chunk_received.emit("【已切换到本地模型】\n\n")
-        
         url = f"{self.ollama_url}/api/chat"
         payload = {
             "model": self.ollama_model,
