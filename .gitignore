@@ -57,3 +57,4 @@ data/
 out/
 .env
 *.log
+*.spec

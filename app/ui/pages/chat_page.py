@@ -309,6 +309,8 @@ class ChatWidget(QWidget):
         self.input_field.setMaximumHeight(80)
         self.input_field.setMinimumHeight(44)
         self.input_field.setAcceptRichText(False)
+        # 确保支持输入法切换
+        self.input_field.setInputMethodHints(Qt.InputMethodHint.ImhNone)
         input_layout.addWidget(self.input_field, stretch=1)
 
         self.send_btn = QPushButton("发送")

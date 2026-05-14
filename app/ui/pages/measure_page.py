@@ -225,12 +225,12 @@ class MeasurePage(QWidget):
 
     def _on_finger_detected(self):
         """检测到手指"""
-        self.status_label.setText("检测到手指，正在测量...")
+        self.status_label.setText("检测到手指，正在测量中，请不要移开手指")
         self.heart_icon.set_pulse(True)
 
     def _on_finger_lost(self):
         """手指丢失"""
-        self.status_label.setText("未检测到手指，请将手指放在传感器上")
+        self.status_label.setText("未检测到手指，请将食指贴在传感器上")
         self.heart_icon.set_pulse(False)
 
     def _on_data_updated(self, hr: float, spo2: float):
@@ -238,7 +238,7 @@ class MeasurePage(QWidget):
         self.heart_rate_label.setText(f"{hr:.0f}")
         if spo2 > 0:
             self.blood_oxygen_label.setText(f"{spo2:.1f}")
-        self.status_label.setText("测量中...")
+        self.status_label.setText("测量中，请不要移开手指...")
 
     def _on_measure_finished(self, hr: float, spo2: float):
         """测量完成"""

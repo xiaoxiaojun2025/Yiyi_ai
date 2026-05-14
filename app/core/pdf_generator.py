@@ -18,21 +18,49 @@ class PDFReportGenerator:
     """PDF报告生成器"""
     
     def __init__(self):
-        # 注册中文字体（使用系统字体）
+        # 注册中文字体（跨平台支持）
+        self.chinese_font = 'Helvetica'  # 默认 fallback
+        
         try:
-            # Windows系统字体路径
-            font_path = "C:/Windows/Fonts/simhei.ttf"  # 黑体
-            if os.path.exists(font_path):
-                pdfmetrics.registerFont(TTFont('SimHei', font_path))
-                self.chinese_font = 'SimHei'
+            import platform
+            system = platform.system()
+            
+            if system == 'Windows':
+                # Windows 系统字体路径
+                font_paths = [
+                    "C:/Windows/Fonts/simhei.ttf",      # 黑体
+                    "C:/Windows/Fonts/msyh.ttc",         # 微软雅黑
+                    "C:/Windows/Fonts/simsun.ttc",       # 宋体
+                ]
+            elif system == 'Linux':
+                # Linux/Debian 系统字体路径
+                font_paths = [
+                    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",     # 文泉驿正黑
+                    "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",   # 文泉驿微米黑
+                    "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",  # Droid Sans
+                    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",     # Noto Sans CJK
+                    "/usr/share/fonts/truetype/arphic/uming.ttc",       # AR PL UMing
+                ]
             else:
-                # 备用方案：尝试其他字体
-                font_path = "C:/Windows/Fonts/msyh.ttc"  # 微软雅黑
+                # macOS 或其他系统
+                font_paths = [
+                    "/System/Library/Fonts/PingFang.ttc",              # 苹方
+                    "/Library/Fonts/Arial Unicode.ttf",                # Arial Unicode
+                ]
+            
+            # 尝试加载第一个可用的字体
+            for font_path in font_paths:
                 if os.path.exists(font_path):
-                    pdfmetrics.registerFont(TTFont('MSYH', font_path))
-                    self.chinese_font = 'MSYH'
-                else:
-                    self.chinese_font = 'Helvetica'  # fallback
+                    font_name = os.path.splitext(os.path.basename(font_path))[0]
+                    pdfmetrics.registerFont(TTFont(font_name, font_path))
+                    self.chinese_font = font_name
+                    print(f"[PDF] 成功加载中文字体: {font_path}")
+                    break
+            
+            if self.chinese_font == 'Helvetica':
+                print("[PDF] 警告: 未找到中文字体，中文将显示为乱码")
+                print("[PDF] 建议安装: sudo apt install fonts-wqy-zenhei")
+                
         except Exception as e:
             print(f"[PDF] 字体加载失败: {e}，使用默认字体")
             self.chinese_font = 'Helvetica'
