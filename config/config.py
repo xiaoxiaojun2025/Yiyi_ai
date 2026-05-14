@@ -1,10 +1,11 @@
 """
 项目配置管理
-硬编码配置，用于打包后直接使用
+支持从 .env 文件加载配置
 """
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 
 
 def get_base_path():
@@ -17,43 +18,54 @@ def get_base_path():
         return Path(__file__).parent.parent
 
 
+# 加载 .env 文件（优先使用 exe 同目录下的 .env）
+base_path = get_base_path()
+env_path = base_path / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+    print(f"[配置] 已加载配置文件: {env_path}")
+else:
+    # 尝试从当前工作目录加载
+    load_dotenv()
+    print("[配置] 未找到 .env 文件，使用默认配置")
+
+
 class Config:
     """应用配置类"""
     
     # ==================== API 配置 ====================
-    SILICONFLOW_API_KEY = "sk-esionmrxspnawypwhltttcpeoivzdscfiogqwqgjrtvymmww"
-    OLLAMA_BASE_URL = "http://localhost:11434"
+    SILICONFLOW_API_KEY = os.getenv("SILICONFLOW_API_KEY", "")
+    OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     
     # ==================== 模型配置 ====================
-    CLOUD_MODEL = "deepseek-ai/DeepSeek-V4-Flash"
-    LOCAL_MODEL = "qwen3:0.6b"
+    CLOUD_MODEL = os.getenv("CLOUD_MODEL", "deepseek-ai/DeepSeek-V4-Flash")
+    LOCAL_MODEL = os.getenv("LOCAL_MODEL", "qwen3:0.6b")
     
     # ==================== 超时配置 ====================
-    CLOUD_TIMEOUT = 120
-    LOCAL_TIMEOUT = 60
+    CLOUD_TIMEOUT = int(os.getenv("CLOUD_TIMEOUT", "120"))
+    LOCAL_TIMEOUT = int(os.getenv("LOCAL_TIMEOUT", "60"))
     
     # ==================== 数据配置 ====================
-    MAX_CONVERSATIONS = 50
+    MAX_CONVERSATIONS = int(os.getenv("MAX_CONVERSATIONS", "50"))
     
     # 数据目录（打包后使用 exe 同级目录，开发环境使用 app/data）
     if getattr(sys, 'frozen', False):
         DATA_DIR = str(get_base_path() / "data")
     else:
-        DATA_DIR = "app/data"
+        DATA_DIR = os.getenv("DATA_DIR", str(Path(__file__).parent.parent / "app" / "data"))
     
     CONVERSATIONS_FILE = os.path.join(DATA_DIR, "conversations.json")
     
     # ==================== UI 配置 ====================
-    WINDOW_WIDTH = 1200
-    WINDOW_HEIGHT = 800
+    WINDOW_WIDTH = int(os.getenv("WINDOW_WIDTH", "1200"))
+    WINDOW_HEIGHT = int(os.getenv("WINDOW_HEIGHT", "800"))
     
     # ==================== 传感器配置 ====================
-    USE_REAL_SENSOR = False  # 打包版本使用模拟数据
-    I2C_BUS = 2
-    MAX30102_I2C_ADDRESS = 0x57
+    USE_REAL_SENSOR = os.getenv("USE_REAL_SENSOR", "False").lower() == "true"
+    I2C_BUS = int(os.getenv("I2C_BUS", "1"))
+    MAX30102_I2C_ADDRESS = int(os.getenv("MAX30102_I2C_ADDRESS", "0x57"), 16)
     
     # ==================== PDF 导出配置 ====================
-    # PDF 输出目录（运行时动态创建到 exe 同级）
     _base_path = get_base_path()
     _pdf_dir = _base_path / "out"
     _pdf_dir.mkdir(parents=True, exist_ok=True)
