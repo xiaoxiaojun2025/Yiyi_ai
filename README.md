@@ -99,6 +99,8 @@ feiteng_ai_doctor/
   
   smbus（I2C 总线通信，Linux 环境）
 
+  pytest （测试用）
+
 #### 硬件要求
 
 如需使用真实传感器测量功能，需要：
