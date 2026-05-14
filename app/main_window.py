@@ -313,9 +313,6 @@ class MainWindow(QMainWindow):
                 "成功", 
                 f"PDF报告已生成：\n{output_path}"
             )
-            
-            # 自动切换到下一个会话
-            self._switch_to_next_conversation(conv_id)
         else:
             QMessageBox.critical(
                 self, 
