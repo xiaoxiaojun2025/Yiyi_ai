@@ -1,3 +1,4 @@
+import os
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QStackedWidget, QInputDialog, QMessageBox
 )
@@ -283,12 +284,14 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "错误", "文件名不能为空")
             return
         
-        # 生成文件路径（在out目录下）
-        import os
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        output_dir = os.path.join(project_root, "out")
+        # 生成文件路径（使用配置中的 PDF_OUTPUT_DIR）
+        from config.config import Config
+        output_dir = Config.PDF_OUTPUT_DIR
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f"{file_name}.pdf")
+        
+        print(f"[DEBUG] PDF输出目录: {output_dir}")
+        print(f"[DEBUG] PDF输出路径: {output_path}")
         
         # 如果文件已存在，询问是否覆盖
         if os.path.exists(output_path):

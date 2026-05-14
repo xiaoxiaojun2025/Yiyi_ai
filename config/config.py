@@ -8,14 +8,36 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+def get_real_exe_path():
+    """
+    获取 exe 真实所在目录（兼容 PyInstaller --onefile 模式）
+    
+    在 --onefile 模式下：
+    - sys.executable 指向临时解压目录中的 exe
+    - sys._MEIPASS 指向临时解压的资源目录
+    - 但我们需要的是用户双击 exe 时所在的原始目录
+    
+    解决方案：使用 Windows API 或检查环境变量
+    """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller 打包后
+        return Path(os.getcwd()).resolve()
+    else:
+        # 开发环境
+        return Path(__file__).parent.parent
+
+
+# 在模块加载时立即获取基础路径（只执行一次）
+BASE_PATH = get_real_exe_path()
+print(f"[DEBUG] 基础路径: {BASE_PATH}")
+print(f"[DEBUG] sys.executable: {sys.executable}")
+print(f"[DEBUG] os.getcwd(): {os.getcwd()}")
+print(f"[DEBUG] sys.frozen: {getattr(sys, 'frozen', False)}")
+
+
 def get_base_path():
     """获取程序运行基础路径（兼容 PyInstaller 打包）"""
-    if getattr(sys, 'frozen', False):
-        # PyInstaller 打包后的路径（exe 所在目录）
-        return Path(sys.executable).parent
-    else:
-        # 开发环境路径
-        return Path(__file__).parent.parent
+    return BASE_PATH
 
 
 # 加载 .env 文件（优先使用 exe 同目录下的 .env）
