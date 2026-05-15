@@ -78,23 +78,10 @@ class SensorWorker(QThread):
     def _read_from_real_sensor(self):
         """从真实 MAX30102 传感器读取数据"""
         
-        # 添加 max30102 库路径（兼容 PyInstaller 打包）
-        if getattr(sys, 'frozen', False):
-            # PyInstaller 打包后：模块在 exe 同级的 max30102-master 目录
-            project_root = os.path.dirname(os.path.abspath(sys.executable))
-        else:
-            # 开发环境：使用项目根目录
-            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        
-        max30102_path = os.path.join(project_root, "max30102-master")
-        if max30102_path not in sys.path:
-            sys.path.insert(0, max30102_path)
-            print(f"[DEBUG] 已添加传感器库路径: {max30102_path}")
-        
-        # 导入传感器库
+        # 导入传感器库（已转换为 Python 包）
         try:
-            from max30102 import MAX30102
-            from hrcalc import calc_hr_and_spo2
+            from max30102_master.max30102 import MAX30102
+            from max30102_master.hrcalc import calc_hr_and_spo2
             import numpy as np
         except ImportError as e:
             self.measure_error.emit(f"无法导入传感器库: {str(e)}\n请确保已安装依赖: pip install numpy smbus2")
